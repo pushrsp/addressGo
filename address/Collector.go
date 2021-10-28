@@ -28,7 +28,7 @@ type workableFile struct {
 type workableFileGroups map[string][]workableFile
 
 func (c *Collector) Merge() {
-	groupFiles := c.groupFilesByPrefix()
+	groupFiles := groupFilesByPrefix(c.Src, c.FilePhases...)
 
 	//for _, workableFiles := range groupFiles {
 	//	for _, workableFile := range workableFiles {
@@ -85,12 +85,12 @@ func (c Collector) copyFiles(wf workableFile) {
 	}
 }
 
-func (c *Collector) groupFilesByPrefix() workableFileGroups {
-	files, _ := os.ReadDir(c.Src)
+func groupFilesByPrefix(src string, filePhases ...FilePhase) workableFileGroups {
+	files, _ := os.ReadDir(src)
 	ret := workableFileGroups{}
 
 	for _, file := range files {
-		filePhase := hasPrefix(file.Name(), c.FilePhases...)
+		filePhase := hasPrefix(file.Name(), filePhases...)
 		if filePhase == nil {
 			continue
 		}

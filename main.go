@@ -2,11 +2,22 @@ package main
 
 import (
 	"addressGo/address"
+	"log"
 	"os"
 )
 
+/*
+진행 순서: utf-8 변환 -> 주소, 부가정보, 도로명, 지번 머지 ->
+*/
 func main() {
 	pwd, _ := os.Getwd() //현재 디렉토리
+	dest := pwd + "\\result"
+
+	err := os.RemoveAll(dest)
+	if err != nil {
+		log.Fatalf("Error: %s\n", err.Error())
+		os.Exit(-1)
+	}
 
 	juso := address.FilePhase{
 		PreFix:   "주소",
@@ -40,4 +51,17 @@ func main() {
 	}
 
 	collector.Merge()
+
+	numOfShards := 5
+
+	source := dest
+	jusoService := address.NewService(source, source+"\\chunk", juso, numOfShards)
+	//jibunService := address.NewService(source, source+"\\chunk", jibun, numOfShards)
+	//bugaService := address.NewService(source, source+"\\chunk", buga, numOfShards)
+	//doroService := address.NewService(source, source+"\\chunk", doro, numOfShards)
+
+	jusoService.Sort()
+	//jibunService.Sort()
+	//bugaService.Sort()
+	//doroService.Sort()
 }
